@@ -1,0 +1,65 @@
+import pygame
+import random
+
+#Initialize Pygame
+pygame.init()
+
+#Constants for the grid
+GRID_WIDTH = 20
+GRID_HEIGHT = 16
+CELL_SIZE = 32
+SCREEN_WIDTH = GRID_WIDTH * CELL_SIZE
+SCREEN_HEIGHT = GRID_HEIGHT * CELL_SIZE
+
+#Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+LINE_COLOR = (200, 200, 200)
+
+#Initialize the screen
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Whack-a-Mole")
+
+#Load the mole image
+mole_image = pygame.image.load("mole.png")
+mole_image = pygame.transform.scale(mole_image, (CELL_SIZE, CELL_SIZE))  # Resize to fit the grid
+
+#Mole position
+mole_x = 0
+mole_y = 0
+
+def draw_grid():
+    """Draws a grid on the screen."""
+    for x in range(0, SCREEN_WIDTH, CELL_SIZE):
+        pygame.draw.line(screen, LINE_COLOR, (x, 0), (x, SCREEN_HEIGHT))
+    for y in range(0, SCREEN_HEIGHT, CELL_SIZE):
+        pygame.draw.line(screen, LINE_COLOR, (0, y), (SCREEN_WIDTH, y))
+
+def draw_mole(x, y):
+    """Draws the mole at the given grid position."""
+    screen.blit(mole_image, (x, y))
+
+def get_random_position():
+    """Returns a random position aligned to the grid."""
+    x = random.randrange(0, GRID_WIDTH) * CELL_SIZE
+    y = random.randrange(0, GRID_HEIGHT) * CELL_SIZE
+    return x, y
+
+#Main game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = event.pos
+            if mole_x <= mouse_x < mole_x + CELL_SIZE and mole_y <= mouse_y < mole_y + CELL_SIZE:
+                mole_x, mole_y = get_random_position()
+
+    #Draw everything
+    screen.fill(WHITE)
+    draw_grid()
+    draw_mole(mole_x, mole_y)
+    pygame.display.flip()
+
+pygame.quit()
